@@ -91,7 +91,6 @@ static const char *steam_allowed[] = {
 
         /* steamwebhelper */
         "libcef.so",
-        "libbz2.so.1.0.6",
 
         /* Swift shader */
         "libGLESv2.so",
@@ -148,9 +147,8 @@ static const char *vendor_blacklist[] = {
         /* general problem causer. */
         "libopenal.so.",
 
-        /* glews (provide glew + glew110 in your distro for full compat) */
+        /* glew runtime version */
         "libGLEW.so.1.10",
-        "libGLEW.so.2.1",
 
         /* libglu has stable soname */
         "libGLU.so.",
@@ -283,8 +281,6 @@ static const char *vendor_transmute_source[] = {
         "libcurl-gnutls.so.3",
         "libcurl.so.3",
 
-        "libbz2.so.1.0.6",
-
         "libudev.so.0",
 };
 
@@ -324,8 +320,6 @@ static const char *vendor_transmute_target[] = {
         /* invalid curls */
         "libcurl-gnutls.so.4",
         "libcurl.so.4",
-
-        "libbz2.so.1.0.6",
 
         "libudev.so.1",
 };
