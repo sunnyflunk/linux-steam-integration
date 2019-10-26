@@ -60,11 +60,19 @@ static const char *steam_override[] = {
         "libharfbuzz.so.0",
 };
 
+/* Disable libintercept for these processes except for steam_override libraries */
 static const char *wanted_steam_processes[] = {
         "html5app_steam",
         "opengl-program",
         "steam",
         "steamwebhelper",
+};
+
+/* Disable libintercept for these game processes who bundle incompatible libs */
+static const char *wanted_game_processes[] = {
+        "dontstarve_steam",
+        "TombRaider",
+        "UDKGame-Linux",
 };
 
 /**
@@ -80,13 +88,7 @@ static const char *vendor_blacklist[] = {
         /* Ensure we don't match weird made up cruft like "libSDL2_locale" */
         "libSDL-1.2",
 
-#if UINTPTR_MAX == 0xffffffffffffffff
-        /* Only blacklist SDL on native 64-bit builds
-         * 32-bit builds tend to do weird stuff, like ship incompatible
-         * patched builds of libSDL (Don't Starve, for example)
-         */
         "libSDL2-2",
-#endif
         "libSDL2_ttf",
         "libSDL_ttf",
         "libSDL2_image",
@@ -160,6 +162,8 @@ static void check_is_intercept_candidate(void)
 
         if (is_in_process_set(nom, wanted_steam_processes, ARRAY_SIZE(wanted_steam_processes))) {
                 work_mode = INTERCEPT_MODE_STEAM;
+        } else if (is_in_process_set(nom, wanted_game_processes, ARRAY_SIZE(wanted_game_processes))) {
+                work_mode = INTERCEPT_MODE_NONE;
         } else {
                 work_mode = INTERCEPT_MODE_VENDOR_OFFENDER;
                 matched_process = "vendor_offender";
