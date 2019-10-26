@@ -48,57 +48,16 @@ typedef enum {
  */
 static InterceptMode work_mode = INTERCEPT_MODE_NONE;
 
-/* Patterns we'll permit Steam to privately load */
-static const char *steam_allowed[] = {
-        /* general */
-        "libicui18n.so",
-        "libicuuc.so",
-        "libavcodec.so.",
-        "libavformat.so.",
-        "libavresample.so.",
-        "libavutil.so.",
-        "libswscale.so.",
-        "libx264.so.",
-
-        /* core plugins */
-        "chromehtml.so",
-        "crashhandler.so",
-        "filesystem_stdio.so",
-        "friendsui.so",
-        "gameoverlayrenderer.so",
-        "gameoverlayui.so",
-        "libaudio.so",
-        "libmiles.so",
-        "libopenvr_api.so",
-        "liboverride.so",
-        "libsteam.so",
-        "libtier0_s.so",
-        "libv8.so",
-        "libvideo.so",
-        "libvstdlib_s.so",
-        "serverbrowser.so",
-        "steamclient.so",
-        "steamoverlayvulkanlayer.so",
-        "steamservice.so",
-        "steamui.so",
-        "vgui2_s.so",
-
-        /* big picture mode */
-        "panorama",
-        "libpangoft2-1.0.so",
-        "libpango-1.0.so",
-        "libpangocairo-1.0.so",
-
-        /* steamwebhelper */
-        "libcef.so",
-
-        /* Swift shader */
-        "libGLESv2.so",
-        "libEGL.so",
-
-        /* widevine */
-        "libwidevinecdmadapter.so",
-        "libwidevinecdm.so",
+/* Libraries we'll allow to override the Steam client bundled version */
+static const char *steam_override[] = {
+        "libatk-1.0.so.0",
+        "libatk-bridge-2.0.so.0",
+        "libatspi.so.0",
+        "libgio-2.0.so.0",
+        "libglib-2.0.so.0",
+        "libgobject-2.0.so.0",
+        "libgraphite2.so.3",
+        "libharfbuzz.so.0",
 };
 
 static const char *wanted_steam_processes[] = {
@@ -237,13 +196,13 @@ char *lsi_search_steam(unsigned int flag, const char *name)
 
         /* Find out if its a Steam private lib.. These are relative "./" files too! */
         if (name && (strstr(name, "/Steam/") || strncmp(name, "./", 2) == 0)) {
-                for (size_t i = 0; i < ARRAY_SIZE(steam_allowed); i++) {
-                        if (strstr(name, steam_allowed[i])) {
-                                return (char *)name;
+                for (size_t i = 0; i < ARRAY_SIZE(steam_override); i++) {
+                        if (strstr(name, steam_override[i])) {
+                                lsi_log_debug("blacklisted loading of vendor library: \033[34;1m%s\033[0m", name);
+                                return NULL;
                         }
                 }
-                lsi_log_debug("blacklisted loading of vendor library: \033[34;1m%s\033[0m", name);
-                return NULL;
+                return (char *)name;
         }
 
         return (char *)name;
